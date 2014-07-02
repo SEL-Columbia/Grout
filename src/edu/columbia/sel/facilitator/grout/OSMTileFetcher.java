@@ -142,11 +142,11 @@ public class OSMTileFetcher implements TileFetchingListener {
 		this.mTempFolder = tempFolder;
 	}
 
-	public String getmRootDownloadDir() {
+	public String getRootDownloadDir() {
 		return mRootDownloadDir;
 	}
 
-	public void setmRootDownloadDir(String mRootDownloadDir) {
+	public void setRootDownloadDir(String mRootDownloadDir) {
 		this.mRootDownloadDir = mRootDownloadDir;
 	}
 
