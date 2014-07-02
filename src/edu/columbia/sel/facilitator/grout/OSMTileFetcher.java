@@ -22,7 +22,6 @@ import org.osmdroid.util.GEMFFile;
 
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 public class OSMTileFetcher implements TileFetchingListener {
 	// ===========================================================
