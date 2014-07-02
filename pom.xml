@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>grout</artifactId>
+	<groupId>edu.columbia.sel</groupId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<name>Grout</name>
+	<description>Android-ready map tile download and management library.</description>
+
+	<dependencies>
+		<!-- Android included libraries -->
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>[4.1,)</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>[4.3,)</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.apache.james</groupId> <artifactId>apache-mime4j</artifactId> 
+			</dependency> -->
+		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
+			</dependency> -->
+
+		<!-- osmdroid dependencies -->
+		<dependency>
+			<groupId>org.osmdroid</groupId>
+			<artifactId>osmdroid-android</artifactId>
+			<version>[4.2,)</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<finalName>${project.groupId}-${project.artifactId}</finalName>
+	</build>
+
+</project>
