@@ -9,11 +9,15 @@ package edu.columbia.sel.facilitator.grout.util;
 
 import java.io.File;
 
-import edu.columbia.sel.facilitator.grout.OSMTileInfo;
+import org.apache.commons.io.FileUtils;
 
+import edu.columbia.sel.facilitator.grout.OSMTileInfo;
 import android.util.Log;
 
 public class TileUtils {
+	
+	private static final String TAG = TileUtils.class.getCanonicalName();
+	
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -107,4 +111,5 @@ public class TileUtils {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+	
 }

@@ -15,15 +15,18 @@ import edu.columbia.sel.facilitator.grout.event.FetchingErrorEvent;
 import edu.columbia.sel.facilitator.grout.event.FetchingProgressEvent;
 import edu.columbia.sel.facilitator.grout.event.FetchingStartEvent;
 import edu.columbia.sel.facilitator.grout.util.DbCreator;
+import edu.columbia.sel.facilitator.grout.util.DeleterListener;
+import edu.columbia.sel.facilitator.grout.util.FolderDeleter;
 import edu.columbia.sel.facilitator.grout.util.FolderZipper;
 import edu.columbia.sel.facilitator.grout.util.TileUtils;
+
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GEMFFile;
 
 import android.os.Environment;
 import android.util.Log;
 
-public class OSMTileFetcher implements TileFetchingListener {
+public class Grout implements TileFetchingListener, DeleterListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -67,26 +70,28 @@ public class OSMTileFetcher implements TileFetchingListener {
 	private boolean mIsRunning = false;
 	
 	private TileFetchingListener mListener;
+	private DeleterListener mDeleterListener;
 	
 	private DownloadManager dm;
+	private FolderDeleter fd;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public OSMTileFetcher() {
+	public Grout() {
 		Log.i(TAG, "++++++++++++ Creating Tile Packager");
 //		dm = new DownloadManager(this, pBaseURL, pTempBaseURL, pThreadCount);
 	}
 
-	public OSMTileFetcher(Double north, Double south, Double east, Double west) {
+	public Grout(Double north, Double south, Double east, Double west) {
 		this.mNorth = north;
 		this.mSouth = south;
 		this.mEast = east;
 		this.mWest = west;
 	}
 
-	public OSMTileFetcher(BoundingBoxE6 bb) {
+	public Grout(BoundingBoxE6 bb) {
 		this.mBoundingBox = bb;
 		this.mNorth = (bb.getLatNorthE6() / 1E6);
 		this.mSouth = (bb.getLatSouthE6() / 1E6);
@@ -110,6 +115,14 @@ public class OSMTileFetcher implements TileFetchingListener {
 		this.mListener = mListener;
 	}
 	
+	public DeleterListener getDeleterListener() {
+		return mDeleterListener;
+	}
+
+	public void setDeleterListener(DeleterListener deleterListener) {
+		this.mDeleterListener = deleterListener;
+	}
+
 	public void setBoundingBox(BoundingBoxE6 bb) {
 		this.mBoundingBox = bb;
 		this.mNorth = (bb.getLatNorthE6() / 1E6);
@@ -245,9 +258,10 @@ public class OSMTileFetcher implements TileFetchingListener {
 		String fullTempPath = getFullTempPath();
 		String fullDestinationFilePath = getFullDestinationFilePath();
 
-		// remove previously cached files
-		Log.i(TAG, "----------------------- DELETING TILES in " + fullTempPath);
-		deleteOfflineTiles(fullTempPath);
+//		// remove previously cached files
+//		// TODO: Make this an option?
+//		Log.i(TAG, "----------------------- DELETING TILES in " + fullTempPath);
+//		clearOfflineTiles();
 
 		// download tiles for selected region
 		Log.i(TAG, "----------------------- DOWNLOADING TILES in " + this.mTempFolder);
@@ -266,7 +280,7 @@ public class OSMTileFetcher implements TileFetchingListener {
 			}
 	
 			if (mServerURL != null) {
-				deleteOfflineTiles(fullTempPath);
+				clearOfflineTiles();
 			}
 		}
 	}
@@ -371,16 +385,6 @@ public class OSMTileFetcher implements TileFetchingListener {
 			e.printStackTrace();
 		}
 	}
-
-	private void deleteOfflineTiles(final String pTempFolder) {
-		// abortIfUserIsNotSure("This will delete the temp folder: " +
-		// pTempFolder + " !");
-
-		/* deleteDirecto */
-		Log.i(TAG, "Deleting temp folder ...");
-		TileUtils.deleteDirectory(new File(pTempFolder));
-		Log.i(TAG, " done.");
-	}
 	
 	/**
 	 * Deletes all cached tiles.
@@ -388,7 +392,8 @@ public class OSMTileFetcher implements TileFetchingListener {
 	public void clearOfflineTiles() {
 		String fullTempPath = getFullTempPath();
 		Log.i(TAG, "-------------> CLEARING OFFLINE TILES in " + fullTempPath);
-		TileUtils.deleteDirectory(new File(fullTempPath));
+		fd = new FolderDeleter(new File(fullTempPath), this.mDeleterListener);
+//		TileUtils.deleteDirectory(new File(fullTempPath));
 	}
 	
 	/**
@@ -485,14 +490,12 @@ public class OSMTileFetcher implements TileFetchingListener {
 
 		return fileCnt;
 	}
-
+	
 	// ===========================================================
 	// Listener Implementations
 	// ===========================================================
 	
-	@Override
 	public void onTileDownloaded() {
-//		Log.i(TAG, "------------> onTileDownloaded - remaining: " + this.mRemaining);
 		if (this.mRemaining > 0) {
 			this.mRemaining -= 1;
 		}
@@ -506,7 +509,6 @@ public class OSMTileFetcher implements TileFetchingListener {
 		}
 	}
 
-	@Override
 	public void onFetchingStart(FetchingStartEvent fse) {
 		mIsRunning = true;
 		this.mRemaining = this.mTotalExpected;
@@ -517,7 +519,6 @@ public class OSMTileFetcher implements TileFetchingListener {
 		}
 	}
 
-	@Override
 	public void onFetchingStop() {
 		mIsRunning = false;
 		if (mListener != null) {
@@ -525,7 +526,6 @@ public class OSMTileFetcher implements TileFetchingListener {
 		}
 	}
 
-	@Override
 	public void onFetchingComplete() {
 		// Let's check the number of files that have downloaded:
 		this.checkFileExistence();
@@ -535,7 +535,6 @@ public class OSMTileFetcher implements TileFetchingListener {
 		this.onFetchingStop();
 	}
 
-	@Override
 	public void onFetchingProgress(FetchingProgressEvent fpe) {
 		fpe.completed = this.mTotalExpected - this.mRemaining;
 		fpe.total = this.mTotalExpected;
@@ -545,11 +544,20 @@ public class OSMTileFetcher implements TileFetchingListener {
 		}
 	}
 
-	@Override
 	public void onFetchingError(FetchingErrorEvent fee) {
 		if (mListener != null) {
 			mListener.onFetchingError(fee);
 		}
+	}
+
+	public void onDeleteStart() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDeleteComplete() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// ===========================================================

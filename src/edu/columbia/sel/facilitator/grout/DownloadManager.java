@@ -38,7 +38,7 @@ public class DownloadManager {
 	// Fields
 	// ===========================================================
 
-	private OSMTileFetcher mTilePackager;
+	private Grout mGrout;
 
 	private final ExecutorService mThreadPool;
 
@@ -53,10 +53,10 @@ public class DownloadManager {
 	// Constructors
 	// ===========================================================
 
-	public DownloadManager(OSMTileFetcher tp, final String pBaseURL, final String pDestinationURL,
+	public DownloadManager(Grout tp, final String pBaseURL, final String pDestinationURL,
 			final int mThreads) {
 		
-		this.mTilePackager = tp;
+		this.mGrout = tp;
 		this.mBaseURL = pBaseURL;
 		this.mDestinationURL = pDestinationURL;
 		this.mThreadPool = Executors.newFixedThreadPool(mThreads);
@@ -65,7 +65,7 @@ public class DownloadManager {
 		mHandler = new Handler(Looper.getMainLooper()) {
 			@Override
 			public void handleMessage(Message msg) {
-				mTilePackager.onTileDownloaded();
+				mGrout.onTileDownloaded();
 				Bundle bundle = msg.getData();
 				int count = bundle.getInt("count");
 				String ti = bundle.getString("tileInfo");
@@ -152,7 +152,6 @@ public class DownloadManager {
 		/**
 		 * TODO: Maybe clean the actual downloading up?
 		 */
-		@Override
 		public void run() {
 			InputStream in = null;
 			OutputStream out = null;
