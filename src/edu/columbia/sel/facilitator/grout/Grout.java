@@ -38,7 +38,7 @@ public class Grout implements TileFetchingListener {
 	// By default we use the mapquest tile server (http://developer.mapquest.com/web/products/open/map)
 	// TODO: this tile server serves JPGs regardless of the .png extension... it works fine unless we try
 	// to archive the resulting files (known bug in osmdroid: https://github.com/osmdroid/osmdroid/issues/18)
-	private static final String DEFAULT_SERVER_URL = "http://otile1.mqcdn.com/tiles/1.0.0/map/%d/%d/%d.png";
+	private static final String DEFAULT_SERVER_URL = "http://otile1.mqcdn.com/tiles/1.0.0/map/";
 	
 	// Root directory to save files
 	private static final String DEFAULT_ROOT_DIR = Environment.getExternalStorageDirectory().toString() + File.separator + "osmdroid";
@@ -50,7 +50,7 @@ public class Grout implements TileFetchingListener {
 	// Fields
 	// ===========================================================
 	
-	private String mServerURL = DEFAULT_SERVER_URL;
+	private String mServerURL = null;
 	private String mRootDownloadDir = DEFAULT_ROOT_DIR;
 	private String mDestinationFile = null;
 	private String mTempFolder = "tiles" + File.separator + "OfflineTiles";
@@ -81,6 +81,7 @@ public class Grout implements TileFetchingListener {
 
 	public Grout() {
 		Log.i(TAG, "++++++++++++ Creating Tile Packager");
+		this.setServerURL(DEFAULT_SERVER_URL);
 	}
 
 	public Grout(Double north, Double south, Double east, Double west) {
@@ -88,6 +89,7 @@ public class Grout implements TileFetchingListener {
 		this.mSouth = south;
 		this.mEast = east;
 		this.mWest = west;
+		this.setServerURL(DEFAULT_SERVER_URL);
 	}
 
 	public Grout(BoundingBoxE6 bb) {
@@ -96,6 +98,7 @@ public class Grout implements TileFetchingListener {
 		this.mSouth = (bb.getLatSouthE6() / 1E6);
 		this.mEast = (bb.getLonEastE6() / 1E6);
 		this.mWest = (bb.getLonWestE6() / 1E6);
+		this.setServerURL(DEFAULT_SERVER_URL);
 	}
 	
 	
@@ -131,8 +134,22 @@ public class Grout implements TileFetchingListener {
 		return this.mServerURL;
 	}
 
+	/**
+	 * Attempts to ensure proper format.
+	 * @param serverURL
+	 */
 	public void setServerURL(String serverURL) {
-		this.mServerURL = serverURL;
+		if (serverURL.contains("%d/%d/%d")) {
+			// supplied serverURL appears to contain the tile formatting, so set the member var and return
+			this.mServerURL = serverURL;
+			return;
+		} else if (!serverURL.endsWith("/")) {
+			// the supplied URL doesn't have a trailing slash, add it before appending the tile location.
+			serverURL = serverURL + "/";
+		} 
+		// Append formattable tile location on URL
+		this.mServerURL = serverURL + "%d/%d/%d.png";
+		
 	}
 
 	public String getDestinationFile() {

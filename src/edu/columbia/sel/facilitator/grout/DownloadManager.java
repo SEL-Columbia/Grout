@@ -53,14 +53,14 @@ public class DownloadManager {
 	// Constructors
 	// ===========================================================
 
-	public DownloadManager(Grout tp, final String pBaseURL, final String pDestinationURL,
+	public DownloadManager(Grout tp, String pBaseURL, final String pDestinationURL,
 			final int mThreads) {
 		
 		this.mGrout = tp;
 		this.mBaseURL = pBaseURL;
+		Log.d(TAG, "BASE URL: " + this.mBaseURL);
 		this.mDestinationURL = pDestinationURL;
 		this.mThreadPool = Executors.newFixedThreadPool(mThreads);
-//		this.mThreadPool.
 
 		mHandler = new Handler(Looper.getMainLooper()) {
 			@Override
