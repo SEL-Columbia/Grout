@@ -26,7 +26,7 @@ import org.osmdroid.util.GEMFFile;
 import android.os.Environment;
 import android.util.Log;
 
-public class Grout implements TileFetchingListener, DeleterListener {
+public class Grout implements TileFetchingListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -41,7 +41,7 @@ public class Grout implements TileFetchingListener, DeleterListener {
 	private static final String DEFAULT_SERVER_URL = "http://otile1.mqcdn.com/tiles/1.0.0/map/%d/%d/%d.png";
 	
 	// Root directory to save files
-	private static final String DEFAULT_ROOT_DIR = Environment.getExternalStorageDirectory().toString() + "/osmdroid/tiles";
+	private static final String DEFAULT_ROOT_DIR = Environment.getExternalStorageDirectory().toString() + File.separator + "osmdroid";
 	
 	// Default maximum tiles
 	private static final int DEFAULT_MAX_TILES = 50000;
@@ -53,7 +53,7 @@ public class Grout implements TileFetchingListener, DeleterListener {
 	private String mServerURL = DEFAULT_SERVER_URL;
 	private String mRootDownloadDir = DEFAULT_ROOT_DIR;
 	private String mDestinationFile = null;
-	private String mTempFolder = "OfflineTiles";
+	private String mTempFolder = "tiles" + File.separator + "OfflineTiles";
 	private String mFileAppendix = ".tile";
 	private BoundingBoxE6 mBoundingBox;
 	private Double mNorth = null;
@@ -81,7 +81,6 @@ public class Grout implements TileFetchingListener, DeleterListener {
 
 	public Grout() {
 		Log.i(TAG, "++++++++++++ Creating Tile Packager");
-//		dm = new DownloadManager(this, pBaseURL, pTempBaseURL, pThreadCount);
 	}
 
 	public Grout(Double north, Double south, Double east, Double west) {
@@ -98,9 +97,6 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		this.mEast = (bb.getLonEastE6() / 1E6);
 		this.mWest = (bb.getLonWestE6() / 1E6);
 	}
-
-		
-
 	
 	
 	// ===========================================================
@@ -227,18 +223,22 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		this.mThreadCount = threadCount;
 	}
 	
+	/**
+	 * Combines root dir and temp folder
+	 * @return
+	 */
 	public String getFullTempPath() {
-		return this.mRootDownloadDir + "/" + this.mTempFolder;
+		return this.mRootDownloadDir + File.separator + this.mTempFolder;
 	}
 	
+	/**
+	 * Combines root dir and destination file
+	 * @return
+	 */
 	public String getFullDestinationFilePath() {
-		return this.mRootDownloadDir + "/" + this.mDestinationFile;
+		return this.mRootDownloadDir + File.separator + this.mDestinationFile;
 	}
 	
-	
-	// ===========================================================
-	// Methods from SuperClass/Interfaces
-	// ===========================================================
 
 	// ===========================================================
 	// Methods
@@ -259,7 +259,7 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		String fullDestinationFilePath = getFullDestinationFilePath();
 
 //		// remove previously cached files
-//		// TODO: Make this an option?
+//		// TODO: Make this an option, to delete tiles as part of fresh download?
 //		Log.i(TAG, "----------------------- DELETING TILES in " + fullTempPath);
 //		clearOfflineTiles();
 
@@ -278,7 +278,8 @@ public class Grout implements TileFetchingListener, DeleterListener {
 			} else {
 				createDb(fullTempPath, fullDestinationFilePath);
 			}
-	
+			
+			// TODO: Not sure what the purpose of this is?
 			if (mServerURL != null) {
 				clearOfflineTiles();
 			}
@@ -341,6 +342,10 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		return true;
 	}
 	
+	/**
+	 * Check that the number of tiles downloaded matches the expected.
+	 * TODO: This method currently serves no practical purpose aside from debugging.
+	 */
 	private void checkFileExistence() {
 		String fullTempPath = getFullTempPath();
 	
@@ -354,6 +359,11 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		}
 	}
 
+	/**
+	 * Generate a GEMF file from the downloaded tiles.
+	 * @param pTempFolder
+	 * @param pDestinationFile
+	 */
 	private void createGemfFile(final String pTempFolder, final String pDestinationFile) {
 		try {
 			Log.i(TAG, "Creating GEMF archive from " + mTempFolder + " to " + mDestinationFile + " ...");
@@ -366,6 +376,11 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		}
 	}
 
+	/**
+	 * Generate a Zip archive from the downloaded tiles.
+	 * @param pTempFolder
+	 * @param pDestinationFile
+	 */
 	private void createZipFile(final String pTempFolder, final String pDestinationFile) {
 		try {
 			Log.i(TAG, "Zipping files to " + pDestinationFile + " ...");
@@ -376,6 +391,12 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		}
 	}
 
+	/**
+	 * Generate a SQLite store for the downloaded tiles
+	 * TODO: This needs to be tested.
+	 * @param pTempFolder
+	 * @param pDestinationFile
+	 */
 	private void createDb(final String pTempFolder, final String pDestinationFile) {
 		try {
 			Log.i(TAG, "Putting files into db : " + pDestinationFile + " ...");
@@ -393,7 +414,7 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		String fullTempPath = getFullTempPath();
 		Log.i(TAG, "-------------> CLEARING OFFLINE TILES in " + fullTempPath);
 		fd = new FolderDeleter(new File(fullTempPath), this.mDeleterListener);
-//		TileUtils.deleteDirectory(new File(fullTempPath));
+		fd.start();
 	}
 	
 	/**
@@ -524,6 +545,8 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		if (mListener != null) {
 			mListener.onFetchingStop();
 		}
+		// cleanup DownloadManager
+		dm.cleanUp();
 	}
 
 	public void onFetchingComplete() {
@@ -548,16 +571,6 @@ public class Grout implements TileFetchingListener, DeleterListener {
 		if (mListener != null) {
 			mListener.onFetchingError(fee);
 		}
-	}
-
-	public void onDeleteStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onDeleteComplete() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	// ===========================================================

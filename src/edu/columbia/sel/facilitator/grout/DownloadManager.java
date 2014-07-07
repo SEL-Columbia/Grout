@@ -101,6 +101,13 @@ public class DownloadManager {
 	public void cancel() {
 		this.mThreadPool.shutdownNow();
 	}
+	
+	/**
+	 * Kill the unused threads
+	 */
+	public void cleanUp() {
+		this.mThreadPool.shutdownNow();
+	}
 
 	public synchronized void waitEmpty() throws InterruptedException {
 		while (this.mQueue.size() > 0) {
