@@ -1,4 +1,4 @@
-package edu.columbia.sel.facilitator.grout.util;
+package edu.columbia.sel.grout.util;
 
 public interface DeleterListener {
 	public void onDeleteStart();

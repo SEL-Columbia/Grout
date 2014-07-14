@@ -5,7 +5,7 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout.event;
+package edu.columbia.sel.grout.event;
 
 public class FetchingErrorEvent {
 	public static final int INVALID_REGION = 1;

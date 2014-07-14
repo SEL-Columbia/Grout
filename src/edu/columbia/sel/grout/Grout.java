@@ -5,20 +5,20 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout;
+package edu.columbia.sel.grout;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.columbia.sel.facilitator.grout.event.FetchingErrorEvent;
-import edu.columbia.sel.facilitator.grout.event.FetchingProgressEvent;
-import edu.columbia.sel.facilitator.grout.event.FetchingStartEvent;
-import edu.columbia.sel.facilitator.grout.util.DbCreator;
-import edu.columbia.sel.facilitator.grout.util.DeleterListener;
-import edu.columbia.sel.facilitator.grout.util.FolderDeleter;
-import edu.columbia.sel.facilitator.grout.util.FolderZipper;
-import edu.columbia.sel.facilitator.grout.util.TileUtils;
+import edu.columbia.sel.grout.event.FetchingErrorEvent;
+import edu.columbia.sel.grout.event.FetchingProgressEvent;
+import edu.columbia.sel.grout.event.FetchingStartEvent;
+import edu.columbia.sel.grout.util.DbCreator;
+import edu.columbia.sel.grout.util.DeleterListener;
+import edu.columbia.sel.grout.util.FolderDeleter;
+import edu.columbia.sel.grout.util.FolderZipper;
+import edu.columbia.sel.grout.util.TileUtils;
 
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GEMFFile;

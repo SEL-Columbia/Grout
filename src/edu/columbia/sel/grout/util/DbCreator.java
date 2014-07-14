@@ -5,7 +5,7 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout.util;
+package edu.columbia.sel.grout.util;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -5,10 +5,15 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout.event;
+package edu.columbia.sel.grout.event;
 
-public class FetchingProgressEvent {
+public class FetchingStartEvent {
 	public int total;
-	public int completed;
-	public float percent;
+	
+	public FetchingStartEvent() {
+	}
+	
+	public FetchingStartEvent(int pTotal) {
+		total = pTotal;
+	}
 }

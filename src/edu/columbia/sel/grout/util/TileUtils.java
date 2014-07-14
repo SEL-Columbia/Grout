@@ -5,13 +5,13 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout.util;
+package edu.columbia.sel.grout.util;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 
-import edu.columbia.sel.facilitator.grout.OSMTileInfo;
+import edu.columbia.sel.grout.OSMTileInfo;
 import android.util.Log;
 
 public class TileUtils {

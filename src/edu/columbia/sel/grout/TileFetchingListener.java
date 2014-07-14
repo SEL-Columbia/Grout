@@ -5,11 +5,11 @@
  * See the file LICENSE for copying permission.
  * 
  */
-package edu.columbia.sel.facilitator.grout;
+package edu.columbia.sel.grout;
 
-import edu.columbia.sel.facilitator.grout.event.FetchingErrorEvent;
-import edu.columbia.sel.facilitator.grout.event.FetchingProgressEvent;
-import edu.columbia.sel.facilitator.grout.event.FetchingStartEvent;
+import edu.columbia.sel.grout.event.FetchingErrorEvent;
+import edu.columbia.sel.grout.event.FetchingProgressEvent;
+import edu.columbia.sel.grout.event.FetchingStartEvent;
 
 public interface TileFetchingListener {
 	public void onTileDownloaded();
